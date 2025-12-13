@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ups-monitor:
+    build: .
+    container_name: ragtech-ups-monitor
+    restart: unless-stopped
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # Adjust to your serial port
+    env_file:
+      - .env
+    environment:
+      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
+      - BAUD_RATE=${BAUD_RATE:-2560}
+      - TIMEOUT=${TIMEOUT:-0.1}
+      - UPS_REQUEST_HEX=${UPS_REQUEST_HEX}
+      - ENABLE_UPTIME_KUMA=${ENABLE_UPTIME_KUMA:-true}
+      - ENABLE_HOME_ASSISTANT=${ENABLE_HOME_ASSISTANT:-true}
+      - UPTIME_KUMA_URL=${UPTIME_KUMA_URL}
+      - HA_WEBHOOK_URL=${HA_WEBHOOK_URL}
+    privileged: true  # Required for serial port access
