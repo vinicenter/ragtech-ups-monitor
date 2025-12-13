@@ -57,11 +57,11 @@ services:
     container_name: ragtech-ups-monitor
     restart: unless-stopped
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyACM0:/dev/ttyACM0
     env_file:
       - .env
     environment:
-      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
+      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyACM0}
       - BAUD_RATE=${BAUD_RATE:-2560}
       - TIMEOUT=${TIMEOUT:-0.1}
       - UPS_REQUEST_HEX=${UPS_REQUEST_HEX}
@@ -93,7 +93,7 @@ cp .env.example .env
 3. Edit `.env` with your configuration:
 ```env
 # Serial port where the UPS is connected
-SERIAL_PORT=/dev/ttyUSB0
+SERIAL_PORT=/dev/ttyACM0
 
 # Baud rate for serial communication
 BAUD_RATE=2560
@@ -116,7 +116,7 @@ UPTIME_KUMA_URL=https://uptimekuma.example.com/api/push/YOUR_PUSH_KEY
 HA_WEBHOOK_URL=https://homeassistant.example.com/api/webhook/YOUR_WEBHOOK_ID
 ```
 
-4. Adjust the serial port in `docker-compose.yml` if needed (default is `/dev/ttyUSB0`)
+4. Adjust the serial port in `docker-compose.yml` if needed (default is `/dev/ttyACM0`)
 
 5. Start the service:
 ```bash
@@ -192,9 +192,9 @@ services:
     container_name: ragtech-ups-monitor
     restart: unless-stopped
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyACM0:/dev/ttyACM0
     environment:
-      - SERIAL_PORT=/dev/ttyUSB0
+      - SERIAL_PORT=/dev/ttyACM0
       - BAUD_RATE=2560
       - UPS_REQUEST_HEX=AA0400801E9E
       - ENABLE_UPTIME_KUMA=true
@@ -214,7 +214,7 @@ services:
     container_name: ragtech-ups-monitor
     restart: unless-stopped
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyACM0:/dev/ttyACM0
     env_file:
       - .env
     privileged: true
@@ -230,9 +230,9 @@ services:
     container_name: ups-monitor-1
     restart: unless-stopped
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyACM0:/dev/ttyACM0
     environment:
-      - SERIAL_PORT=/dev/ttyUSB0
+      - SERIAL_PORT=/dev/ttyACM0
       - UPS_REQUEST_HEX=AA0400801E9E
       - UPTIME_KUMA_URL=https://uptimekuma.example.com/api/push/ups1
       - HA_WEBHOOK_URL=https://homeassistant.example.com/api/webhook/ups1

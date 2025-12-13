@@ -6,11 +6,11 @@ services:
     container_name: ragtech-ups-monitor
     restart: unless-stopped
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0  # Adjust to your serial port
+      - /dev/ttyACM0:/dev/ttyACM0  # Adjust to your serial port
     env_file:
       - .env
     environment:
-      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
+      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyACM0}
       - BAUD_RATE=${BAUD_RATE:-2560}
       - TIMEOUT=${TIMEOUT:-0.1}
       - UPS_REQUEST_HEX=${UPS_REQUEST_HEX}

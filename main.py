@@ -28,7 +28,7 @@ def push_kuma(status: str, msg: str):
             timeout=5
         )
     except Exception as e:
-        print("Erro Uptime Kuma:", e)
+        print("Error Uptime Kuma:", e)
 
 
 def push_homeassistant(payload: dict):
@@ -41,7 +41,7 @@ def push_homeassistant(payload: dict):
             timeout=5
         )
     except Exception as e:
-        print("Erro Home Assistant:", e)
+        print("Error Home Assistant:", e)
 
 
 def parse_frame(data: bytes):
