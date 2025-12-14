@@ -266,10 +266,56 @@ The monitor will send:
 
 ### Home Assistant
 
-1. Go to Settings → Automations & Scenes → Webhooks
-2. Create a new webhook
-3. Copy the webhook URL
-4. Set it as `HA_WEBHOOK_URL` in your environment
+1. Add the webhook template sensor configuration to your `configuration.yaml`:
+
+```yaml
+template:
+  - trigger:
+      - platform: webhook
+        webhook_id: YOUR_WEBHOOK_ID  # Choose a unique ID (e.g., "ups_monitor_data")
+        allowed_methods:
+          - POST
+        local_only: true
+    sensor:
+      - name: "UPS Temperature"
+        state: "{{ trigger.json.temperature }}"
+        unit_of_measurement: "°C"
+
+      - name: "UPS Load"
+        state: "{{ trigger.json.load }}"
+        unit_of_measurement: "%"
+
+      - name: "UPS Battery Percentage"
+        state: "{{ trigger.json.battery_percentage }}"
+        unit_of_measurement: "%"
+
+      - name: "UPS Status"
+        state: "{{ trigger.json.status }}"
+
+      - name: "UPS Battery Voltage"
+        state: "{{ trigger.json.battery_voltage }}"
+        unit_of_measurement: "V"
+```
+
+2. Restart Home Assistant to load the webhook
+
+3. The webhook URL will be constructed as:
+```
+http://YOUR_HOME_ASSISTANT_IP:8123/api/webhook/YOUR_WEBHOOK_ID
+```
+
+For example, if your `webhook_id` is `ups_monitor_data`:
+```
+http://192.168.1.100:8123/api/webhook/ups_monitor_data
+```
+
+4. Set this URL as `HA_WEBHOOK_URL` in your `.env` file
+
+**Security Notes:**
+- The `local_only: true` setting restricts webhook access to local network only
+- Choose a unique and hard-to-guess `webhook_id` for additional security
+- If exposing Home Assistant externally, use HTTPS and consider authentication
+- Never expose webhook IDs publicly or commit them to version control
 
 The monitor sends a JSON payload with all metrics:
 ```json
@@ -282,7 +328,14 @@ The monitor sends a JSON payload with all metrics:
 }
 ```
 
-You can create sensors in Home Assistant using the webhook data.
+After configuration, you'll have the following sensors available:
+- `sensor.ups_temperature`
+- `sensor.ups_load`
+- `sensor.ups_battery_percentage`
+- `sensor.ups_status`
+- `sensor.ups_battery_voltage`
+
+You can use these sensors in automations, dashboards, and other Home Assistant integrations.
 
 ## Troubleshooting
 
@@ -322,6 +375,18 @@ MIT License - feel free to use and modify as needed.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Building and Publishing the Docker Image
+
+To build and push the multi-architecture Docker image:
+
+```bash
+docker buildx create --name multi --use
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t vinicenter/ragtech-ups-monitor \
+  --push .
+```
 
 ## Tested Hardware
 
