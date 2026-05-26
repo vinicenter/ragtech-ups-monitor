@@ -53,12 +53,14 @@ def parse_frame(data: bytes):
     raw_battery = int(hex_str[22:24], 16)
     raw_charge  = int(hex_str[16:18], 16)
     raw_input   = int(hex_str[52:54], 16)
+    raw_output  = int(hex_str[54:56], 16)
     raw_temp    = int(hex_str[30:32], 16)
     raw_load    = int(hex_str[28:30], 16)
 
     battery_charge  = round(raw_charge * 0.393)
     battery_voltage = round((raw_battery * 0.1342) / 2, 2)
     input_voltage   = round(raw_input * 1.06)
+    output_voltage  = round(raw_output * 1.06)
 
     if input_voltage < 100:
         ups_status = "Low Battery" if battery_charge < 30 else "On Battery"
@@ -72,6 +74,8 @@ def parse_frame(data: bytes):
         "status": ups_status,
         "battery_percentage": battery_charge,
         "battery_voltage": battery_voltage,
+        "input_voltage": input_voltage,
+        "output_voltage": output_voltage,
         "load": raw_load,
         "temperature": raw_temp,
     }

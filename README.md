@@ -14,6 +14,7 @@ Share with the community!
 - 🔋 Battery voltage and charge percentage tracking
 - 🌡️ Temperature monitoring
 - ⚡ Load usage detection
+- 🔌 Input and output AC voltage monitoring
 - 📢 Uptime Kuma integration for status notifications
 - 🏠 Home Assistant webhook support for metrics
 - 🐳 Docker support with Docker Compose
@@ -23,6 +24,8 @@ Share with the community!
 - **UPS Status**: Online, On Battery, Low Battery, Replace Battery
 - **Battery Percentage**: Current charge level
 - **Battery Voltage**: Voltage measurement
+- **Input Voltage (AC)**: AC input voltage from the mains
+- **Output Voltage (AC)**: AC output voltage supplied to connected equipment
 - **Load**: Current load on the UPS
 - **Temperature**: UPS temperature
 
@@ -295,6 +298,14 @@ template:
       - name: "UPS Battery Voltage"
         state: "{{ trigger.json.battery_voltage }}"
         unit_of_measurement: "V"
+
+      - name: "UPS Input Voltage"
+        state: "{{ trigger.json.input_voltage }}"
+        unit_of_measurement: "V"
+
+      - name: "UPS Output Voltage"
+        state: "{{ trigger.json.output_voltage }}"
+        unit_of_measurement: "V"
 ```
 
 2. Restart Home Assistant to load the webhook
@@ -323,6 +334,8 @@ The monitor sends a JSON payload with all metrics:
   "status": "Online",
   "battery_percentage": 100,
   "battery_voltage": 13.5,
+  "input_voltage": 220,
+  "output_voltage": 220,
   "load": 25,
   "temperature": 28
 }
@@ -334,6 +347,8 @@ After configuration, you'll have the following sensors available:
 - `sensor.ups_battery_percentage`
 - `sensor.ups_status`
 - `sensor.ups_battery_voltage`
+- `sensor.ups_input_voltage`
+- `sensor.ups_output_voltage`
 
 You can use these sensors in automations, dashboards, and other Home Assistant integrations.
 
