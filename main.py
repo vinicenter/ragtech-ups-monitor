@@ -47,6 +47,10 @@ def push_homeassistant(payload: dict):
         print("Error Home Assistant:", e)
 
 
+def is_valid_ac_voltage(voltage: int):
+    return MIN_AC_VOLTAGE <= voltage <= MAX_AC_VOLTAGE
+
+
 def parse_frame(data: bytes):
     hex_str = ''.join(f'{b:02x}' for b in data)
 
@@ -68,10 +72,10 @@ def parse_frame(data: bytes):
     output_voltage_alt = round(raw_output_alt * 1.06)
 
     # Some UPS frames can report an invalid primary output value.
-    # If it is outside the expected AC range (80-300V), use the alternate byte when valid.
+    # If it is outside MIN_AC_VOLTAGE..MAX_AC_VOLTAGE, use the alternate byte when valid.
     if (
-        (output_voltage < MIN_AC_VOLTAGE or output_voltage > MAX_AC_VOLTAGE)
-        and MIN_AC_VOLTAGE <= output_voltage_alt <= MAX_AC_VOLTAGE
+        not is_valid_ac_voltage(output_voltage)
+        and is_valid_ac_voltage(output_voltage_alt)
     ):
         output_voltage = output_voltage_alt
 
