@@ -19,6 +19,7 @@ HA_WEBHOOK_URL = os.getenv("HA_WEBHOOK_URL")
 
 MIN_AC_VOLTAGE = 80
 MAX_AC_VOLTAGE = 300
+AC_VOLTAGE_FACTOR = 1.06
 
 
 def push_kuma(status: str, msg: str):
@@ -48,6 +49,7 @@ def push_homeassistant(payload: dict):
 
 
 def is_valid_ac_voltage(voltage: int):
+    """Return True when voltage is within configured AC operating bounds."""
     return MIN_AC_VOLTAGE <= voltage <= MAX_AC_VOLTAGE
 
 
@@ -67,9 +69,9 @@ def parse_frame(data: bytes):
 
     battery_charge  = round(raw_charge * 0.393)
     battery_voltage = round((raw_battery * 0.1342) / 2, 2)
-    input_voltage   = round(raw_input * 1.06)
-    output_voltage  = round(raw_output * 1.06)
-    output_voltage_alt = round(raw_output_alt * 1.06)
+    input_voltage   = round(raw_input * AC_VOLTAGE_FACTOR)
+    output_voltage  = round(raw_output * AC_VOLTAGE_FACTOR)
+    output_voltage_alt = round(raw_output_alt * AC_VOLTAGE_FACTOR)
 
     # Some UPS frames can report an invalid primary output value.
     # If it is outside MIN_AC_VOLTAGE..MAX_AC_VOLTAGE, use the alternate byte when valid.
@@ -78,6 +80,7 @@ def parse_frame(data: bytes):
         and is_valid_ac_voltage(output_voltage_alt)
     ):
         output_voltage = output_voltage_alt
+    # If both readings are invalid, keep the primary value for visibility/debugging.
 
     if input_voltage < 100:
         ups_status = "Low Battery" if battery_charge < 30 else "On Battery"
