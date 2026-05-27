@@ -17,6 +17,9 @@ REQUEST = bytes.fromhex(REQUEST_HEX)
 UPTIME_KUMA_URL = os.getenv("UPTIME_KUMA_URL")
 HA_WEBHOOK_URL = os.getenv("HA_WEBHOOK_URL")
 
+MIN_AC_VOLTAGE = 80
+MAX_AC_VOLTAGE = 300
+
 
 def push_kuma(status: str, msg: str):
     if not ENABLE_UPTIME_KUMA or not UPTIME_KUMA_URL:
@@ -64,7 +67,8 @@ def parse_frame(data: bytes):
     output_voltage  = round(raw_output * 1.06)
     output_voltage_alt = round(raw_output_alt * 1.06)
 
-    if output_voltage < 80 <= output_voltage_alt <= 300:
+    # Some UPS frames report an incorrect low value in the primary output byte.
+    if output_voltage < MIN_AC_VOLTAGE <= output_voltage_alt <= MAX_AC_VOLTAGE:
         output_voltage = output_voltage_alt
 
     if input_voltage < 100:
