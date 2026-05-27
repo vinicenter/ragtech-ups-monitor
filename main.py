@@ -67,8 +67,12 @@ def parse_frame(data: bytes):
     output_voltage  = round(raw_output * 1.06)
     output_voltage_alt = round(raw_output_alt * 1.06)
 
-    # Some UPS frames report an incorrect low value in the primary output byte.
-    if output_voltage < MIN_AC_VOLTAGE <= output_voltage_alt <= MAX_AC_VOLTAGE:
+    # Some UPS frames can report an invalid primary output value.
+    # If it is outside the expected AC range (80-300V), use the alternate byte when valid.
+    if (
+        not MIN_AC_VOLTAGE <= output_voltage <= MAX_AC_VOLTAGE
+        and MIN_AC_VOLTAGE <= output_voltage_alt <= MAX_AC_VOLTAGE
+    ):
         output_voltage = output_voltage_alt
 
     if input_voltage < 100:
